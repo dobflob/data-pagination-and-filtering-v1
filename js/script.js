@@ -15,11 +15,10 @@ For assistance:
 Create the `showPage` function
 This function will create and insert/append the elements needed to display a "page" of nine students
 */
-
+const resultsPerPage = 1;
 /**
  * showPage();
  * take in data and page
- * define number of items per page
  * define startIndex and endIndex of page
  * loop through the data array
  * if index is within startIndex and endIndex
@@ -45,9 +44,57 @@ This function will create and insert/append the elements needed to display a "pa
  * @param data is the array of students to page through
  * @param page is the page number to display
  */
-const showPage = () => {};
+const showPage = (data, page) => {
+  const startIndex = page * resultsPerPage - resultsPerPage;
+  const endIndex = page * resultsPerPage - 1;
 
+  //console.log(data[startIndex]);
+  //console.log(data[endIndex]);
 
+  for (i = startIndex; i <= endIndex; i++) {
+    const student = data[i];
+    const li = createElement('li', ['student-item', 'cf']);
+    const studentDiv = createElement('div', ['student-details']);
+    const img = createElement('img', ['avatar'], [['src', student.picture.large], ['alt', 'Profile Picture']]);
+    const h3 = createElement('h3', [], [], `${student.name.first} ${student.name.last}`);
+    const emailSpan = createElement('span', ['email'], [['title', student.email]], `${student.email}`);
+    const regDiv = createElement('div', ['joined-details']);
+    const dateSpan = createElement('span', ['date'], [], `Joined ${student.registered.date}`);
+
+    
+  };
+};
+
+/**
+ * createElement() function creates elements and add classes, attributes, and textContent to the element
+ * @param {string} htmlEl the html element to create
+ * @param {array} classes classes to assign to the element
+ * @param {array} attributes array of attributes where inner array stores attribute name and value
+ * @param {string} text textContent to set for element
+ */
+function createElement(htmlEl, classes, attributes, text) {
+  const elName = document.createElement(htmlEl); //creates the element and stores in variable
+  // add classes
+  if (classes && classes.length > 0) {
+    for (let className of classes) {
+      elName.classList.add(className);
+    }
+  }
+  // set attributes
+  if (attributes && attributes.length > 0) {
+    for (let attribute of attributes) {
+      console.log('hello');
+      //console.log(attribute[0], attribute[1]);
+      elName.setAttribute(attribute[0], attribute[1]);
+    }
+  }
+  // set textContent
+  if (text !== '') {
+    elName.textContent = text;
+  }
+
+  return elName;
+};
 
 /*
 Create the `addPagination` function
@@ -86,4 +133,5 @@ const addPagination = () => {};
 // Call functions
 
 // call showPage() with initial params: data, 1 (1 so app loads with page 1 active)
+showPage(data, 4);
 // call addPagination() with inital param: data (hardcode results per page for now)
