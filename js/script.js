@@ -8,15 +8,15 @@ For assistance:
    Check out the "Project Resources" section of the Instructions tab: https://teamtreehouse.com/projects/data-pagination-and-filtering#instructions
    Reach out in your Slack community: https://treehouse-fsjs-102.slack.com/app_redirect?channel=unit-2
 */
-
-
-
+const studentList = document.querySelector('.student-list');
+const linkList = document.querySelector('.link-list');
+let activePage = 1;
+const resultsPerPage = 5;
 /*
 Create the `showPage` function
 This function will create and insert/append the elements needed to display a "page" of nine students
 */
-const studentList = document.querySelector('.student-list');
-const resultsPerPage = 9;
+
 /**
  * showPage();
  * take in data and page
@@ -53,6 +53,9 @@ const showPage = (data, page) => {
   //console.log(data[endIndex]);
 
   for (i = startIndex; i <= endIndex; i++) {
+    if (i === data.length) {
+      break //stop looping once you're at the end of the data set
+    }
     const student = data[i];
     // create elements to hold all the student info
     const li = createElement('li', ['student-item', 'cf']);
@@ -95,8 +98,6 @@ function createElement(htmlEl, classes, attributes, text) {
   // set attributes
   if (attributes && attributes.length > 0) {
     for (let attribute of attributes) {
-      console.log('hello');
-      //console.log(attribute[0], attribute[1]);
       elName.setAttribute(attribute[0], attribute[1]);
     }
   }
@@ -139,11 +140,38 @@ This function will create and insert/append the elements needed for the paginati
  * @param data array of students
  * @param resultsPerPage how many students should be shown per page -- if not hardcoded
  */
-const addPagination = () => {};
+const addPagination = (data) => {
+  const totalPages = Math.ceil(data.length / resultsPerPage);
 
+  for (i = 1; i <= totalPages; i++) {
+    const li = createElement('li');
+    const button = createElement('button', [], [], i);
+    if (parseInt(button.textContent) === activePage) {
+      button.className = 'active';
+    }
+    li.appendChild(button);
+    linkList.appendChild(li);
+  }
+};
+
+linkList.addEventListener('click', (e) => {
+
+  if (e.target.tagName === 'BUTTON') {
+    const targetButton = e.target;
+    const targetPage = parseInt(e.target.textContent);
+    const activeButton = document.querySelector('.active');
+    activePage = activeButton.textContent;
+    console.log(activeButton);
+
+    if (targetPage !== activePage) {
+      targetButton.className = 'active';
+      activeButton.className = '';
+      studentList.innerHTML = '';
+      showPage(data, targetPage);
+    }
+  }
+});
 
 // Call functions
-
-// call showPage() with initial params: data, 1 (1 so app loads with page 1 active)
-showPage(data, 4);
-// call addPagination() with inital param: data (hardcode results per page for now)
+showPage(data, 1); // pass 1 so app loads with page 1 selected
+addPagination(data);
