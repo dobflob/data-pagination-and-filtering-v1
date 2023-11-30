@@ -156,12 +156,11 @@ const addPagination = (data) => {
 
 linkList.addEventListener('click', (e) => {
 
-  if (e.target.tagName === 'BUTTON') {
-    const targetButton = e.target;
-    const targetPage = parseInt(e.target.textContent);
-    const activeButton = document.querySelector('.active');
-    activePage = activeButton.textContent;
-    console.log(activeButton);
+  if (e.target.tagName === 'BUTTON') { //only run if click was on a button element
+    const targetButton = e.target; //target button so active class can get added later
+    const targetPage = parseInt(e.target.textContent); //target page is int to pass to showPage function
+    const activeButton = document.querySelector('.active'); //get current active button to remove active class later
+    activePage = activeButton.textContent; //get active page int to compare to target page int 
 
     if (targetPage !== activePage) {
       targetButton.className = 'active';
