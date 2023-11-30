@@ -8,10 +8,8 @@ For assistance:
    Check out the "Project Resources" section of the Instructions tab: https://teamtreehouse.com/projects/data-pagination-and-filtering#instructions
    Reach out in your Slack community: https://treehouse-fsjs-102.slack.com/app_redirect?channel=unit-2
 */
-const studentList = document.querySelector('.student-list');
-const linkList = document.querySelector('.link-list');
 let activePage = 1;
-const resultsPerPage = 5;
+const resultsPerPage = 9;
 /*
 Create the `showPage` function
 This function will create and insert/append the elements needed to display a "page" of nine students
@@ -45,18 +43,17 @@ This function will create and insert/append the elements needed to display a "pa
  * @param {array} data is the array of students to page through
  * @param {int} page is the page number to display
  */
-const showPage = (data, page) => {
+const showPage = (list, page) => {
   const startIndex = page * resultsPerPage - resultsPerPage;
-  const endIndex = page * resultsPerPage - 1;
+  const endIndex = page * resultsPerPage;
+  const studentList = document.querySelector('.student-list');
+  studentList.innerHTML = '';
 
-  //console.log(data[startIndex]);
-  //console.log(data[endIndex]);
-
-  for (i = startIndex; i <= endIndex; i++) {
-    if (i === data.length) {
+  for (i = startIndex; i < endIndex; i++) {
+    if (i === list.length) {
       break //stop looping once you're at the end of the data set
     }
-    const student = data[i];
+    const student = list[i];
     // create elements to hold all the student info
     const li = createElement('li', ['student-item', 'cf']);
     const studentDiv = createElement('div', ['student-details']);
@@ -137,39 +134,41 @@ This function will create and insert/append the elements needed for the paginati
 *        call showPage(data, page) function with target page number as the page value
       endif
  * endloop
- * @param data array of students
+ * @param list array of students
  * @param resultsPerPage how many students should be shown per page -- if not hardcoded
  */
-const addPagination = (data) => {
-  const totalPages = Math.ceil(data.length / resultsPerPage);
-
+const addPagination = (list) => {
+  const totalPages = Math.ceil(list.length / resultsPerPage);
+  const ul = document.querySelector('.link-list');
   for (i = 1; i <= totalPages; i++) {
     const li = createElement('li');
     const button = createElement('button', [], [], i);
+
     if (parseInt(button.textContent) === activePage) {
       button.className = 'active';
     }
     li.appendChild(button);
-    linkList.appendChild(li);
+    ul.appendChild(li);
   }
+
+  ul.addEventListener('click', (e) => {
+
+    if (e.target.tagName === 'BUTTON') { //only run if click was on a button element
+      const targetButton = e.target; //target button so active class can get added later
+      const targetPage = parseInt(e.target.textContent); //target page is int to pass to showPage function
+      const activeButton = document.querySelector('.active'); //get current active button to remove active class later
+      activePage = activeButton.textContent; //get active page int to compare to target page int 
+  
+      if (targetPage !== activePage) {
+        targetButton.className = 'active';
+        activeButton.className = '';
+        showPage(data, targetPage);
+      }
+    }
+  });
 };
 
-linkList.addEventListener('click', (e) => {
 
-  if (e.target.tagName === 'BUTTON') { //only run if click was on a button element
-    const targetButton = e.target; //target button so active class can get added later
-    const targetPage = parseInt(e.target.textContent); //target page is int to pass to showPage function
-    const activeButton = document.querySelector('.active'); //get current active button to remove active class later
-    activePage = activeButton.textContent; //get active page int to compare to target page int 
-
-    if (targetPage !== activePage) {
-      targetButton.className = 'active';
-      activeButton.className = '';
-      studentList.innerHTML = '';
-      showPage(data, targetPage);
-    }
-  }
-});
 
 // Call functions
 showPage(data, 1); // pass 1 so app loads with page 1 selected
