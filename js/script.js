@@ -15,7 +15,8 @@ For assistance:
 Create the `showPage` function
 This function will create and insert/append the elements needed to display a "page" of nine students
 */
-const resultsPerPage = 1;
+const studentList = document.querySelector('.student-list');
+const resultsPerPage = 9;
 /**
  * showPage();
  * take in data and page
@@ -41,8 +42,8 @@ const resultsPerPage = 1;
    *  append children to li 
  *    append children to ul 
  * endif
- * @param data is the array of students to page through
- * @param page is the page number to display
+ * @param {array} data is the array of students to page through
+ * @param {int} page is the page number to display
  */
 const showPage = (data, page) => {
   const startIndex = page * resultsPerPage - resultsPerPage;
@@ -53,15 +54,26 @@ const showPage = (data, page) => {
 
   for (i = startIndex; i <= endIndex; i++) {
     const student = data[i];
+    // create elements to hold all the student info
     const li = createElement('li', ['student-item', 'cf']);
     const studentDiv = createElement('div', ['student-details']);
     const img = createElement('img', ['avatar'], [['src', student.picture.large], ['alt', 'Profile Picture']]);
     const h3 = createElement('h3', [], [], `${student.name.first} ${student.name.last}`);
     const emailSpan = createElement('span', ['email'], [['title', student.email]], `${student.email}`);
     const regDiv = createElement('div', ['joined-details']);
-    const dateSpan = createElement('span', ['date'], [], `Joined ${student.registered.date}`);
+    const dateSpan = createElement('span', ['date'], [['title', `Joined ${student.registered.date}`]], `Joined ${student.registered.date}`);
 
-    
+    // student div contains image, name, email
+    studentDiv.appendChild(img);
+    studentDiv.appendChild(h3);
+    studentDiv.appendChild(emailSpan);
+    // registration div contains registration date
+    regDiv.appendChild(dateSpan);
+    // list item contains student details and registration details
+    li.appendChild(studentDiv);
+    li.appendChild(regDiv);
+    // add list item to student list
+    studentList.appendChild(li);
   };
 };
 
