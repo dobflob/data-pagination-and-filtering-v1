@@ -10,6 +10,26 @@ For assistance:
 */
 let activePage = 1;
 const resultsPerPage = 9;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const headerArea = document.querySelector('.header');
+  const label = createElement('label', ['student-search'], [['for', 'search']]);
+  const span = createElement('span', [], [], 'Search by name');
+  const input = createElement('input', [], [['id', 'search'], ['placeholder', 'Search by name...']]);
+  const button = createElement('button', [], [['type', 'button']]);
+  const img = createElement('img', [], [['src', 'img/icn-search.svg'], ['alt', 'Magnifying glass icon'], ['title', 'Search']]);
+
+  //add image to button
+  button.appendChild(img);
+  //add elements to label
+  label.appendChild(span);
+  label.appendChild(input);
+  label.appendChild(button);
+
+  headerArea.appendChild(label);
+  
+});
+
 /*
 Create the `showPage` function
 This function will create and insert/append the elements needed to display a "page" of nine students
@@ -140,6 +160,8 @@ This function will create and insert/append the elements needed for the paginati
 const addPagination = (list) => {
   const totalPages = Math.ceil(list.length / resultsPerPage);
   const ul = document.querySelector('.link-list');
+  ul.innerHTML = '';
+
   for (i = 1; i <= totalPages; i++) {
     const li = createElement('li');
     const button = createElement('button', [], [], i);
@@ -162,14 +184,12 @@ const addPagination = (list) => {
       if (targetPage !== activePage) {
         targetButton.className = 'active';
         activeButton.className = '';
-        showPage(data, targetPage);
+        showPage(list, targetPage);
       }
     }
   });
 };
 
-
-
 // Call functions
 showPage(data, 1); // pass 1 so app loads with page 1 selected
-addPagination(data);
+addPagination(data); // build initial page buttons
