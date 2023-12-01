@@ -10,11 +10,12 @@ For assistance:
 */
 const resultsPerPage = 9;
 const list = data;
+// variable for each of the content sections in static html
+const headerArea = document.querySelector('.header');
 const studentList = document.querySelector('.student-list');
 const pagination = document.querySelector('.pagination');
 
 document.addEventListener('DOMContentLoaded', () => {
-  const headerArea = document.querySelector('.header');
   const label = createElement('label', ['student-search'], [['for', 'search']]);
   const span = createElement('span', [], [], 'Search by name');
   const input = createElement('input', [], [['id', 'search'], ['placeholder', 'Search by name...']]);
@@ -153,13 +154,11 @@ This function will create and insert/append the elements needed for the paginati
 *        call showPage(data, page) function with target page number as the page value
       endif
  * endloop
- * @param list array of students
- * @param resultsPerPage how many students should be shown per page -- if not hardcoded
+ * @param {array} list array of students
+ * @param {int} resultsPerPage how many students should be shown per page
  */
 const addPagination = (list) => {
   const totalPages = Math.ceil(list.length / resultsPerPage);
-  const ul = document.querySelector('.link-list');
-  ul.innerHTML = '';
   const activePage = 1; //reset active page to 1 
 
   for (i = 1; i <= totalPages; i++) {
@@ -169,7 +168,7 @@ const addPagination = (list) => {
         button.classList.add('active');
       }
     li.appendChild(button);
-    ul.appendChild(li);
+    pagination.appendChild(li);
   }
 };
 
@@ -189,10 +188,35 @@ pagination.addEventListener('click', (e) => {
   }
 });
 
-searchList = (list, searchText) => {
+/**
+ * searchList();
+ * receive search text
+ * create match array to hold list of items that match search text
+ * set active page to 1 since we will want to reset page to 1 when displaying results
+ * create variable to hold new element for no results message
+ * reset pagination to empty list so previous buttons don't appear on screen
+ * loop through full data list
+ *  for each item in the loop
+ *    check to see if item includes search text
+ *    if item contains search text
+ *      push item into match array
+ *    endif
+ * endloop
+ * if match array has any values
+ *  call show page function passing in new match array
+ *  call add pagination to get new page buttons
+ * else (if match array is empty)
+ *  reset student list to empty list
+ *  add no results element to list
+ * endif
+ * 
+ * @param {string} searchText text user enters into search input
+ */
+searchList = (searchText) => {
   let matchList = [];
   const activePage = 1; //reset active page to 1 
-  const noResults = createElement('p', ['no-results'], [], `No results for ${searchText}`);
+  const noResults = createElement('p', ['no-results'], [], `No results for ${searchText}...`);
+  pagination.innerHTML = '';
   
   for (i = 0; i < list.length; i++) {
     const fullName = `${list[i].name.first} ${list[i].name.last}`;
@@ -205,13 +229,29 @@ searchList = (list, searchText) => {
   if (matchList.length > 0) {
     showPage(matchList, activePage);
     addPagination(matchList);
-    console.log(matchList.length);
   } else {
     studentList.innerHTML = '';
-    pagination.setAttribute('display', 'none');
     studentList.appendChild(noResults);
   }
 };
+
+headerArea.addEventListener('click', (e) => {
+  const targetElement = e.target;
+  
+  if (targetElement.tagName === 'BUTTON' || targetElement.tagName === 'IMG') {
+    const searchText = document.getElementById('search').value;
+    searchList(searchText);
+  }
+});
+
+headerArea.addEventListener('keyup', (e) => {
+  const targetElement = e.target;
+  
+  if (targetElement.tagName === 'INPUT') {
+    const searchText = document.getElementById('search').value;
+    searchList(searchText);
+  }
+});
 
 // Call functions
 showPage(list, 1); // pass 1 so app loads with page 1 selected
