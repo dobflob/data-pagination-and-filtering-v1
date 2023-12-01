@@ -9,11 +9,13 @@ For assistance:
    Reach out in your Slack community: https://treehouse-fsjs-102.slack.com/app_redirect?channel=unit-2
 */
 const resultsPerPage = 9;
-const list = data;
 // variable for each of the content sections in static html
 const headerArea = document.querySelector('.header');
 const studentList = document.querySelector('.student-list');
 const pagination = document.querySelector('.pagination');
+const list = data;
+let filteredList = [];
+let isFiltered = false;
 
 document.addEventListener('DOMContentLoaded', () => {
   const label = createElement('label', ['student-search'], [['for', 'search']]);
@@ -39,9 +41,9 @@ This function will create and insert/append the elements needed to display a "pa
 
 /**
  * showPage();
- * take in data and page
+ * take in list and page
  * define startIndex and endIndex of page
- * loop through the data array
+ * loop through the list array
  * if index is within startIndex and endIndex
  *    create element li
  *       add classes student-item cf
@@ -62,7 +64,7 @@ This function will create and insert/append the elements needed to display a "pa
    *  append children to li 
  *    append children to ul 
  * endif
- * @param {array} data is the array of students to page through
+ * @param {array} list is the array of students to page through
  * @param {int} page is the page number to display
  */
 const showPage = (list, page) => {
@@ -133,11 +135,11 @@ This function will create and insert/append the elements needed for the paginati
 
 /**
  * addPagination();
- * take in data (used to determine number of pages)
+ * take in list (used to determine number of pages)
  * create event listener
  * set event to click
  * ensure event target is a button
- * using data length and resultsPerPage
+ * using list length and resultsPerPage
  * determine how many total pages are needed
  * store pages needed as pageCount
  * run loop for each page of pageCount
@@ -151,7 +153,7 @@ This function will create and insert/append the elements needed for the paginati
 *     if event target is a button AND event target is not already active
 *        remove active class from previous page
 *        add active class to target page
-*        call showPage(data, page) function with target page number as the page value
+*        call showPage(list, page) function with target page number as the page value
       endif
  * endloop
  * @param {array} list array of students
@@ -183,7 +185,11 @@ pagination.addEventListener('click', (e) => {
       targetButton.className = 'active';
       activeButton.className = '';
       activePage = targetPage;
-      showPage(list, activePage);
+      if (isFiltered) {
+        showPage(filteredList, activePage);
+      } else {
+        showPage(list, activePage);
+      }
     }
   }
 });
@@ -191,21 +197,21 @@ pagination.addEventListener('click', (e) => {
 /**
  * searchList();
  * receive search text
- * create match array to hold list of items that match search text
+ * create filtered array to hold list of items that match search text
  * set active page to 1 since we will want to reset page to 1 when displaying results
  * create variable to hold new element for no results message
  * reset pagination to empty list so previous buttons don't appear on screen
- * loop through full data list
+ * loop through full list
  *  for each item in the loop
  *    check to see if item includes search text
  *    if item contains search text
- *      push item into match array
+ *      push item into filtered array
  *    endif
  * endloop
- * if match array has any values
- *  call show page function passing in new match array
+ * if filtered array has any values
+ *  call show page function passing in new filtered array
  *  call add pagination to get new page buttons
- * else (if match array is empty)
+ * else (if filtered array is empty)
  *  reset student list to empty list
  *  add no results element to list
  * endif
@@ -213,7 +219,7 @@ pagination.addEventListener('click', (e) => {
  * @param {string} searchText text user enters into search input
  */
 searchList = (searchText) => {
-  let matchList = [];
+  filteredList = [];
   const activePage = 1; //reset active page to 1 
   const noResults = createElement('p', ['no-results'], [], `No results for ${searchText}...`);
   pagination.innerHTML = '';
@@ -222,13 +228,14 @@ searchList = (searchText) => {
     const fullName = `${list[i].name.first} ${list[i].name.last}`;
 
     if (fullName.toLowerCase().includes(searchText.toLowerCase())) {
-      matchList.push(list[i]);
+      filteredList.push(list[i]);
     }
   }
   
-  if (matchList.length > 0) {
-    showPage(matchList, activePage);
-    addPagination(matchList);
+  if (filteredList.length > 0) {
+    isFiltered = true;
+    showPage(filteredList, activePage);
+    addPagination(filteredList);
   } else {
     studentList.innerHTML = '';
     studentList.appendChild(noResults);
