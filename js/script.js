@@ -8,8 +8,10 @@ For assistance:
    Check out the "Project Resources" section of the Instructions tab: https://teamtreehouse.com/projects/data-pagination-and-filtering#instructions
    Reach out in your Slack community: https://treehouse-fsjs-102.slack.com/app_redirect?channel=unit-2
 */
-let activePage = 1;
 const resultsPerPage = 9;
+const list = data;
+const studentList = document.querySelector('.student-list');
+const pagination = document.querySelector('.pagination');
 
 document.addEventListener('DOMContentLoaded', () => {
   const headerArea = document.querySelector('.header');
@@ -27,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
   label.appendChild(button);
 
   headerArea.appendChild(label);
-  
 });
 
 /*
@@ -66,7 +67,6 @@ This function will create and insert/append the elements needed to display a "pa
 const showPage = (list, page) => {
   const startIndex = page * resultsPerPage - resultsPerPage;
   const endIndex = page * resultsPerPage;
-  const studentList = document.querySelector('.student-list');
   studentList.innerHTML = '';
 
   for (i = startIndex; i < endIndex; i++) {
@@ -122,7 +122,6 @@ function createElement(htmlEl, classes, attributes, text) {
   if (text !== '') {
     elName.textContent = text;
   }
-
   return elName;
 };
 
@@ -161,35 +160,59 @@ const addPagination = (list) => {
   const totalPages = Math.ceil(list.length / resultsPerPage);
   const ul = document.querySelector('.link-list');
   ul.innerHTML = '';
+  const activePage = 1; //reset active page to 1 
 
   for (i = 1; i <= totalPages; i++) {
     const li = createElement('li');
     const button = createElement('button', [], [], i);
-
-    if (parseInt(button.textContent) === activePage) {
-      button.className = 'active';
-    }
+      if (parseInt(button.textContent) === activePage) {
+        button.classList.add('active');
+      }
     li.appendChild(button);
     ul.appendChild(li);
   }
+};
 
-  ul.addEventListener('click', (e) => {
+pagination.addEventListener('click', (e) => {
+  if (e.target.tagName === 'BUTTON') { //only run if click was on a button element
+    const targetButton = e.target; //target button so active class can get added later
+    const targetPage = parseInt(e.target.textContent); //target page is int to pass to showPage function
+    const activeButton = document.querySelector('.active'); //get current active button to remove active class later
+    let activePage = parseInt(activeButton.textContent); //get active page int to compare to target page int 
 
-    if (e.target.tagName === 'BUTTON') { //only run if click was on a button element
-      const targetButton = e.target; //target button so active class can get added later
-      const targetPage = parseInt(e.target.textContent); //target page is int to pass to showPage function
-      const activeButton = document.querySelector('.active'); //get current active button to remove active class later
-      activePage = activeButton.textContent; //get active page int to compare to target page int 
-  
-      if (targetPage !== activePage) {
-        targetButton.className = 'active';
-        activeButton.className = '';
-        showPage(list, targetPage);
-      }
+    if (targetPage !== activePage) {
+      targetButton.className = 'active';
+      activeButton.className = '';
+      activePage = targetPage;
+      showPage(list, activePage);
     }
-  });
+  }
+});
+
+searchList = (list, searchText) => {
+  let matchList = [];
+  const activePage = 1; //reset active page to 1 
+  const noResults = createElement('p', ['no-results'], [], `No results for ${searchText}`);
+  
+  for (i = 0; i < list.length; i++) {
+    const fullName = `${list[i].name.first} ${list[i].name.last}`;
+
+    if (fullName.toLowerCase().includes(searchText.toLowerCase())) {
+      matchList.push(list[i]);
+    }
+  }
+  
+  if (matchList.length > 0) {
+    showPage(matchList, activePage);
+    addPagination(matchList);
+    console.log(matchList.length);
+  } else {
+    studentList.innerHTML = '';
+    pagination.setAttribute('display', 'none');
+    studentList.appendChild(noResults);
+  }
 };
 
 // Call functions
-showPage(data, 1); // pass 1 so app loads with page 1 selected
-addPagination(data); // build initial page buttons
+showPage(list, 1); // pass 1 so app loads with page 1 selected
+addPagination(list); // build initial page buttons
